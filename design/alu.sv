@@ -19,8 +19,12 @@ module alu#(
                     ALUResult = SrcA & SrcB;
             4'b0001:        // OR
                     ALUResult = SrcA | SrcB;
+            4'b1010:        // XOR
+                    ALUResult = SrcA ^ SrcB;
             4'b0010:        // ADD
                     ALUResult = SrcA + SrcB;
+            4'b0011:
+                    ALUResult = SrcA - SrcB;
             4'b0100:        // SHIFT LEFT
                     ALUResult = SrcA << SrcB[4:0];
             4'b0101:        // SHIFT RIGHT (LOGIC)
