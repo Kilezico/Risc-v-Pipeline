@@ -180,8 +180,14 @@ def sbin(value):
 	binary = bin(int(value))
 
 	if (binary[0] == '-'):
-		return '1' + binary[3:]
-
+		binary = binary[3::]
+		troca = False
+		res = ''
+		for bit in binary[::-1]:
+			res += '1' if troca != (bit == '1') else '0'
+			if bit == '1': troca = True
+			
+		return '1' + res[::-1]
 	else:
 		return '0' + binary[2:]
 
