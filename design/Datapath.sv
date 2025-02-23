@@ -35,7 +35,10 @@ module Datapath #(
     output logic reade,  // read enable
     output logic [DM_ADDRESS-1:0] addr,  // address
     output logic [DATA_W-1:0] wr_data,  // write data
-    output logic [DATA_W-1:0] rd_data  // read data
+    output logic [DATA_W-1:0] rd_data,  // read data
+
+    input logic EhJAL,
+    input logic EhJALR
 );
 
   logic [PC_W-1:0] PC, PCPlus4, Next_PC;
@@ -225,7 +228,11 @@ module Datapath #(
       BrImm,
       Old_PC_Four,
       BrPC,
-      PcSel
+      PcSel,
+      EhJAL,
+      EhJALR,
+      Funct3,
+      opcode
   );
 
   // EX_MEM_Reg C;
