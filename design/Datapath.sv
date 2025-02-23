@@ -38,7 +38,8 @@ module Datapath #(
     output logic [DATA_W-1:0] rd_data,  // read data
 
     input logic EhJAL,
-    input logic EhJALR
+    input logic EhJALR,
+    input logic [DATA_W-1:0] PC_Four 
 );
 
   logic [PC_W-1:0] PC, PCPlus4, Next_PC;
@@ -54,6 +55,11 @@ module Datapath #(
   logic [DATA_W-1:0] FAmux_Result;
   logic [DATA_W-1:0] FBmux_Result;
   logic Reg_Stall;  //1: PC fetch same, Register not update
+
+  logic [DATA_W-1:0] OutroFio; /* Fio entermediario pra fazer a conexao entre o mux resmux (que escolhe entre Alu_Result e MemReadData)
+                                  e o jalmux (que escolhe entre a saida do primeiro multiplexador e PC_Four para JAL e JALR) */
+  logic [DATA_W-1:0] PC_Four_temp; // Sinal intermediario para PC + 4
+  assign PC_Four_temp = B.Curr_Pc + 4; // B.Curr_Pc eh o PC atual no estagio EX
 
   if_id_reg A;
   id_ex_reg B;
@@ -235,6 +241,10 @@ module Datapath #(
       opcode
   );
 
+  always @(posedge clk) begin
+    $display("Time: %0t | Cur_PC = %h", $time, B.Curr_Pc);
+  end
+
   // EX_MEM_Reg C;
   always @(posedge clk) begin
     if (reset)   // initialization
@@ -315,7 +325,14 @@ module Datapath #(
       D.Alu_Result,
       D.MemReadData,
       D.MemtoReg,
-      WrmuxSrc
+      OutroFio
+  );
+
+  mux2 #(32) jaomux (
+    OutroFio,
+    PC_Four_temp,
+    (EhJAL || EhJALR), // Sinal de controle: JAL ou JALR
+    WrmuxSrc
   );
 
   assign WB_Data = WrmuxSrc;
