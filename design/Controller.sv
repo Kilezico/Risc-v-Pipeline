@@ -30,6 +30,9 @@ module Controller (
   assign LW = 7'b0000011;  //lw
   assign SW = 7'b0100011;  //sw
   assign BR = 7'b1100011;  //beq
+  // Adicionamos jal e jalr para ser mais legivel de trata-los nos assigns
+  assign JAL = 7'b1101111; // jal
+  assign JALR = 7'b1100111; // jalr
   assign I_TYPE = 7'b0010011; //addi, slli, etc
 
   always_comb begin
@@ -37,14 +40,18 @@ module Controller (
     EhJALR = 0; // Inicializando como 0
 
     case (Opcode)
-      7'b1101111: EhJAL  = 1;  // JAL
-      7'b1100111: EhJALR = 1;  // JALR
+      7'b1101111: EhJAL = 1;  // JAL
+      7'b1100111: EhJALR = 1; // JALR
+      default: begin // Nenhum deles
+        EhJAL = 0;
+        EhJALR = 0;
+      end
     endcase
   end
 
   assign ALUSrc = (Opcode == LW || Opcode == SW || Opcode == I_TYPE);
   assign MemtoReg = (Opcode == LW);
-  assign RegWrite = (Opcode == R_TYPE || Opcode == LW || Opcode == I_TYPE);
+  assign RegWrite = (Opcode == R_TYPE || Opcode == LW || Opcode == I_TYPE || Opcode == JAL || Opcode == JALR); // Adicionei JAL e JALR
   assign MemRead = (Opcode == LW);
   assign MemWrite = (Opcode == SW);
   assign ALUOp[0] = (Opcode == BR);
