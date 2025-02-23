@@ -29,7 +29,7 @@ module Memoria32 (
     input wire Clk,
     input wire [31:0] Datain,
     output wire [31:0] Dataout,
-    input wire Wr
+    input wire [3:0] Wr // Wr expandido pra 4 bits
 );
 
   wire [15:0] readUsefullAddress = raddress[15:0];
@@ -76,7 +76,7 @@ module Memoria32 (
       .data(inS0),
       .radd(addS0),
       .wadd(waddS0),
-      .wren(Wr),
+      .wren(Wr[0]),  // controle de escrita para o byte 0
       .q(outS0)
   );
   //1
@@ -88,7 +88,7 @@ module Memoria32 (
       .data(inS1),
       .radd(addS1),
       .wadd(waddS1),
-      .wren(Wr),
+      .wren(Wr[1]),  // controle de escrita para o byte 1
       .q(outS1)
   );
   //2
@@ -100,7 +100,7 @@ module Memoria32 (
       .data(inS2),
       .radd(addS2),
       .wadd(waddS2),
-      .wren(Wr),
+      .wren(Wr[2]),  // controle de escrita para o byte 2
       .q(outS2)
   );
   //3
@@ -112,7 +112,7 @@ module Memoria32 (
       .data(inS3),
       .radd(addS3),
       .wadd(waddS3),
-      .wren(Wr),
+      .wren(Wr[3]),  // controle de escrita para o byte 3
       .q(outS3)
   );
 
