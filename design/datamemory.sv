@@ -36,8 +36,16 @@ module datamemory #(
 
     if (MemRead) begin
       case (Funct3)
-        3'b010:  //LW
-        rd <= Dataout;
+        3'b010: // LW
+          rd <= Dataout; 
+        3'b000: // LB
+          rd <= {{24{Dataout[7]}}, Dataout[7:0]};  // 1 byte extensao de sinal
+        3'b001:  // LH
+          rd <= {{16{Dataout[15]}}, Dataout[15:0]};  // meia palavra extensao de sinal
+        3'b100: // LBU
+          rd <= {24'b0, Dataout[7:0]};  // 1 byte extensao sem sinal
+        3'b101:  // LHU
+          rd <= {16'b0, Dataout[15:0]};  // meia palavra extensao sem sinal
         default: rd <= Dataout;
       endcase
     end else if (MemWrite) begin
@@ -46,6 +54,14 @@ module datamemory #(
           Wr <= 4'b1111;
           Datain <= wd;
         end
+        3'b000: begin  // SB
+          Wr <= 4'b0001;  // escreve na mem o byte menos significativo
+          Datain <= {24'b0, wd[7:0]};
+        end
+        3'b001: begin  // SH
+          Wr <= 4'b0011;  // escreve a meia palavra menos significativa
+          Datain <= {16'b0, wd[15:0]};
+        end	
         default: begin
           Wr <= 4'b1111;
           Datain <= wd;
@@ -53,5 +69,5 @@ module datamemory #(
       endcase
     end
   end
-
+    
 endmodule
