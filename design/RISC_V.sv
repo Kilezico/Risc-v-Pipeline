@@ -34,14 +34,18 @@ module riscv #(
       MemRead,
       MemWrite,
       ALUop,
-      Branch
+      Branch,
+      EhJAL,
+      EhJALR
   );
 
   ALUController ac (
       ALUop_Reg,
       Funct7,
       Funct3,
-      Operation
+      Operation,
+      EhJAL,
+      EhJALR
   );
 
   Datapath dp (
@@ -67,7 +71,10 @@ module riscv #(
       rd,
       addr,
       wr_data,
-      rd_data
+      rd_data,
+
+      EhJAL,
+      EhJALR
   );
 
 endmodule
