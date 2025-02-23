@@ -25,6 +25,7 @@ module riscv #(
   logic [6:0] Funct7;
   logic [2:0] Funct3;
   logic [3:0] Operation;
+  logic [31:0] PC_Four;
 
   Controller c (
       opcode,
@@ -74,7 +75,9 @@ module riscv #(
       rd_data,
 
       EhJAL,
-      EhJALR
+      EhJALR,
+      PC_Four
   );
 
 endmodule
+
