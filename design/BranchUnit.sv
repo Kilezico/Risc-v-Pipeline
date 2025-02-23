@@ -42,7 +42,6 @@ module BranchUnit #(
   end
 
   // Calculando o o valor do próximo PC
-  // Cálculo do próximo PC
   always_comb begin
     if(EhJAL || EhJALR || Branch_Sel) begin
       BrPC = PC_Imm;
