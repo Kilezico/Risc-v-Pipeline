@@ -17,11 +17,13 @@ module ALUController (
       ((ALUOp == 2'b10) && (Funct3 == 3'b101) && (Funct7 == 7'b0000000)) ||  // R\I->>
       ((ALUOp == 2'b10) && (Funct3 == 3'b101) && (Funct7 == 7'b0100000)) ||  // R\I->>>
       ((ALUOp == 2'b10) && (Funct3 == 3'b000) && (Funct7 == 7'b0100000)) ||    // R-sub
+      (EhJALR) || // JALR usa ADD
       ((ALUOp == 2'b01) && (Funct3 == 3'b100)) ||  // BLT
       ((ALUOp == 2'b01) && (Funct3 == 3'b101));  // BGE
 
   assign Operation[1] = (ALUOp == 2'b00) ||  // LW\SW
       ((ALUOp == 2'b10) && (Funct3 == 3'b000)) ||  // R\I-add && R-sub
+      (EhJALR) ||  // JALR usa ADD
       ((ALUOp == 2'b10) && (Funct3 == 3'b101) && (Funct7 == 7'b0100000)) ||  // R\I->>>
       ((ALUOp == 2'b10) && (Funct3 == 3'b100));  // R\I-xor
       
@@ -36,8 +38,7 @@ module ALUController (
       ((ALUOp == 2'b10) && (Funct3 == 3'b100)) ||  // R\I-xor
       ((ALUOp == 2'b01) && (Funct3 == 3'b001)) ||  // BNE
       ((ALUOp == 2'b01) && (Funct3 == 3'b100)) ||  // BLT
-      ((ALUOp == 2'b01) && (Funct3 == 3'b101)) ||  // BGE
-      (EhJALR); 
-      // Como JAL nao precisa de operação da ALU, nao eh necessario fazer alteracoes por aqui
+      ((ALUOp == 2'b01) && (Funct3 == 3'b101));  // BGE
+      
 
 endmodule
