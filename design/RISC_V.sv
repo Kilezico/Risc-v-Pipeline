@@ -25,7 +25,8 @@ module riscv #(
   logic [6:0] Funct7;
   logic [2:0] Funct3;
   logic [3:0] Operation;
-  logic [31:0] PC_Four;
+  
+  logic EhJal, EhJalr;
 
   Controller c (
       opcode,
@@ -36,17 +37,15 @@ module riscv #(
       MemWrite,
       ALUop,
       Branch,
-      EhJAL,
-      EhJALR
+      EhJal,
+      EhJalr
   );
 
   ALUController ac (
       ALUop_Reg,
       Funct7,
       Funct3,
-      Operation,
-      EhJAL,
-      EhJALR
+      Operation
   );
 
   Datapath dp (
@@ -73,10 +72,8 @@ module riscv #(
       addr,
       wr_data,
       rd_data,
-
-      EhJAL,
-      EhJALR,
-      PC_Four
+      EhJal,
+      EhJalr
   );
 
 endmodule

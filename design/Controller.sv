@@ -24,7 +24,7 @@ module Controller (
 );
 
   logic [6:0] R_TYPE, LW, SW, BR;
-  logic [6:0] I_TYPE;
+  logic [6:0] I_TYPE, JAL, JALR;
 
   assign R_TYPE = 7'b0110011;  //add,and
   assign LW = 7'b0000011;  //lw
@@ -35,21 +35,9 @@ module Controller (
   assign JALR = 7'b1100111; // jalr
   assign I_TYPE = 7'b0010011; //addi, slli, etc
 
-  always_comb begin
-    EhJAL = 0; // Inicializando como 0
-    EhJALR = 0; // Inicializando como 0
-
-    case (Opcode)
-      7'b1101111: EhJAL = 1;  // JAL
-      7'b1100111: EhJALR = 1; // JALR
-      default: begin // Nenhum deles
-        EhJAL = 0;
-        EhJALR = 0;
-      end
-    endcase
-  end
-
-  assign ALUSrc = (Opcode == LW || Opcode == SW || Opcode == I_TYPE);
+  assign EhJAL = (Opcode == JAL);
+  assign EhJALR = (Opcode == JALR);
+  assign ALUSrc = (Opcode == LW || Opcode == SW || Opcode == I_TYPE || Opcode == JALR);
   assign MemtoReg = (Opcode == LW);
   assign RegWrite = (Opcode == R_TYPE || Opcode == LW || Opcode == I_TYPE || Opcode == JAL || Opcode == JALR); // Adicionei JAL e JALR
   assign MemRead = (Opcode == LW);

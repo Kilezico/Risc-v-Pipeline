@@ -38,8 +38,7 @@ module Datapath #(
     output logic [DATA_W-1:0] rd_data,  // read data
 
     input logic EhJAL,
-    input logic EhJALR,
-    input logic [DATA_W-1:0] PC_Four 
+    input logic EhJALR
 );
 
   logic [PC_W-1:0] PC, PCPlus4, Next_PC;
@@ -58,8 +57,7 @@ module Datapath #(
 
   logic [DATA_W-1:0] OutroFio; /* Fio entermediario pra fazer a conexao entre o mux resmux (que escolhe entre Alu_Result e MemReadData)
                                   e o jalmux (que escolhe entre a saida do primeiro multiplexador e PC_Four para JAL e JALR) */
-  logic [DATA_W-1:0] PC_Four_temp; // Sinal intermediario para PC + 4
-  assign PC_Four_temp = B.Curr_Pc + 4; // B.Curr_Pc eh o PC atual no estagio EX
+  logic IsJump;
 
   if_id_reg A;
   id_ex_reg B;
@@ -160,6 +158,8 @@ module Datapath #(
       B.func3 <= 0;
       B.func7 <= 0;
       B.Curr_Instr <= A.Curr_Instr;  //debug tmp
+      B.EhJal <= 0;
+      B.EhJalr <= 0;  
     end else begin
       B.ALUSrc <= ALUsrc;
       B.MemtoReg <= MemtoReg;
@@ -178,6 +178,8 @@ module Datapath #(
       B.func3 <= A.Curr_Instr[14:12];
       B.func7 <= A.Curr_Instr[31:25];
       B.Curr_Instr <= A.Curr_Instr;  //debug tmp
+      B.EhJal <= EhJAL;
+      B.EhJalr <= EhJALR;
     end
   end
 
@@ -235,15 +237,10 @@ module Datapath #(
       Old_PC_Four,
       BrPC,
       PcSel,
-      EhJAL,
-      EhJALR,
-      Funct3,
-      opcode
+      B.EhJal,
+      B.EhJalr,
+      B.func3
   );
-
-  always @(posedge clk) begin
-    $display("Time: %0t | Cur_PC = %h", $time, B.Curr_Pc);
-  end
 
   // EX_MEM_Reg C;
   always @(posedge clk) begin
@@ -261,6 +258,8 @@ module Datapath #(
       C.rd <= 0;
       C.func3 <= 0;
       C.func7 <= 0;
+      C.EhJal <= 0;
+      C.EhJalr <= 0; 
     end else begin
       C.RegWrite <= B.RegWrite;
       C.MemtoReg <= B.MemtoReg;
@@ -275,6 +274,8 @@ module Datapath #(
       C.func3 <= B.func3;
       C.func7 <= B.func7;
       C.Curr_Instr <= B.Curr_Instr;  // debug tmp
+      C.EhJal <= B.EhJal;
+      C.EhJalr <= B.EhJalr; 
     end
   end
 
@@ -307,6 +308,8 @@ module Datapath #(
       D.Alu_Result <= 0;
       D.MemReadData <= 0;
       D.rd <= 0;
+      D.EhJal <= 0;
+      D.EhJalr <= 0;
     end else begin
       D.RegWrite <= C.RegWrite;
       D.MemtoReg <= C.MemtoReg;
@@ -317,6 +320,8 @@ module Datapath #(
       D.MemReadData <= ReadData;
       D.rd <= C.rd;
       D.Curr_Instr <= C.Curr_Instr;  //Debug Tmp
+      D.EhJal <= C.EhJal;
+      D.EhJalr <= C.EhJalr; 
     end
   end
 
@@ -328,10 +333,11 @@ module Datapath #(
       OutroFio
   );
 
+  assign IsJump = (D.EhJal || D.EhJalr); // Sinal de controle: JAL ou JALR
   mux2 #(32) jaomux (
     OutroFio,
-    PC_Four_temp,
-    (EhJAL || EhJALR), // Sinal de controle: JAL ou JALR
+    D.Pc_Four,
+    IsJump, 
     WrmuxSrc
   );
 
