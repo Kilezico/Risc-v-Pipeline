@@ -20,11 +20,13 @@ module Controller (
 
     // Definindo EhJAL e EhJALR
     output logic EhJAL,
-    output logic EhJALR
+    output logic EhJALR,
+    output logic Halt
 );
 
   logic [6:0] R_TYPE, LW, SW, BR;
   logic [6:0] I_TYPE, JAL, JALR;
+  logic [6:0] HALT;
 
   assign R_TYPE = 7'b0110011;  //add,and
   assign LW = 7'b0000011;  //lw
@@ -34,7 +36,9 @@ module Controller (
   assign JAL = 7'b1101111; // jal
   assign JALR = 7'b1100111; // jalr
   assign I_TYPE = 7'b0010011; //addi, slli, etc
+  assign HALT = 7'b1111111;
 
+  assign Halt = (Opcode == HALT);
   assign EhJAL = (Opcode == JAL);
   assign EhJALR = (Opcode == JALR);
   assign ALUSrc = (Opcode == LW || Opcode == SW || Opcode == I_TYPE || Opcode == JALR);

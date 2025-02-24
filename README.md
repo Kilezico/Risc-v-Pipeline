@@ -39,7 +39,7 @@ Instruções a implementar:
 | 17 | `SLT`     |      ✅     |    ✅    |      ✅      |
 | 18 | `XOR`     |      ✅     |    ✅    |      ✅      |
 | 19 | `OR`      |      ✅     |    ✅    |      ✅      |
-| 20 | `HALT`    |      ❌     |    ❌    |      ❌      |
+| 20 | `HALT`    |      ✅     |    ✅    |      ✅      |
 
 ### Observações
 

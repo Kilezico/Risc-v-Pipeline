@@ -38,7 +38,8 @@ module Datapath #(
     output logic [DATA_W-1:0] rd_data,  // read data
 
     input logic EhJAL,
-    input logic EhJALR
+    input logic EhJALR,
+    input logic Halt
 );
 
   logic [PC_W-1:0] PC, PCPlus4, Next_PC;
@@ -58,6 +59,7 @@ module Datapath #(
   logic [DATA_W-1:0] OutroFio; /* Fio entermediario pra fazer a conexao entre o mux resmux (que escolhe entre Alu_Result e MemReadData)
                                   e o jalmux (que escolhe entre a saida do primeiro multiplexador e PC_Four para JAL e JALR) */
   logic IsJump;
+  logic Stall_PC;
 
   if_id_reg A;
   id_ex_reg B;
@@ -76,11 +78,12 @@ module Datapath #(
       PcSel,
       Next_PC
   );
+  assign Stall_PC = (Reg_Stall || Halt);
   flopr #(9) pcreg (
       clk,
       reset,
       Next_PC,
-      Reg_Stall,
+      Stall_PC,
       PC
   );
   instructionmemory instr_mem (
@@ -95,6 +98,8 @@ module Datapath #(
         begin
       A.Curr_Pc <= 0;
       A.Curr_Instr <= 0;
+    end else if (Halt) begin
+      A.Curr_Instr <= {32{1'b1}}; // Replica a instrução HALT
     end
         else if (!Reg_Stall)    // stall
         begin
@@ -139,7 +144,7 @@ module Datapath #(
 
   // ID_EX_Reg B;
   always @(posedge clk) begin
-    if ((reset) || (Reg_Stall) || (PcSel))   // initialization or flush or generate a NOP if hazard
+    if ((reset) || (Reg_Stall) || (PcSel) || (Halt))   // initialization or flush or generate a NOP if hazard
         begin
       B.ALUSrc <= 0;
       B.MemtoReg <= 0;
